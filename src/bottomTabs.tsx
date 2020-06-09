@@ -6,7 +6,8 @@ import { useSafeArea } from 'react-native-safe-area-context'
 import { useIsFocused, RouteProp } from '@react-navigation/native'
 
 import overlay from './overlay'
-import { Foto } from './foto'
+// import { Foto } from './foto'
+import Foto from './camera/camera.page'
 import { Message } from './message'
 import { Albuns } from './albuns'
 import { StackNavigatorParamlist } from './types'
@@ -41,6 +42,10 @@ export const BottomTabs = (props: Props) => {
     default:
       icon = 'file-send'
       break
+  }
+
+  const btnAction = () => {
+    alert(routeName)
   }
 
   const tabBarColor = theme.dark
@@ -85,7 +90,7 @@ export const BottomTabs = (props: Props) => {
           }}
         />
       </Tab.Navigator>
-      <Portal>
+      {/* <Portal>
         <FAB
           visible={isFocused}
           icon={icon}
@@ -100,9 +105,9 @@ export const BottomTabs = (props: Props) => {
               accent: theme.colors.primary,
             },
           }}
-          onPress={() => {}}
+          onPress={btnAction}
         />
-      </Portal>
+      </Portal> */}
     </React.Fragment>
   )
 }

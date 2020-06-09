@@ -1,3 +1,4 @@
+import React from 'react'
 import { MaterialCommunityIcons, Feather, SimpleLineIcons } from '@expo/vector-icons'
 import {
   DrawerContentComponentProps,
@@ -5,7 +6,6 @@ import {
   DrawerContentScrollView,
   DrawerItem,
 } from '@react-navigation/drawer'
-import React from 'react'
 import { StyleSheet, TouchableOpacity, View } from 'react-native'
 import {
   Avatar,
