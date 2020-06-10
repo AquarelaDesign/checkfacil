@@ -9,14 +9,14 @@ import { Updates } from 'expo'
 import { useColorScheme } from 'react-native-appearance'
 
 import { RootNavigator } from './rootNavigator'
-import { PreferencesContext } from './context/preferencesContext'
+// import { PreferencesContext } from './context/preferencesContext'
 
 export const Main = () => {
   const colorScheme = useColorScheme();
-  const [theme, setTheme] = React.useState<'light' | 'dark'>(
+  const [theme, setTheme] = React.useState(
     colorScheme === 'dark' ? 'dark' : 'light'
   )
-  const [rtl] = React.useState<boolean>(I18nManager.isRTL);
+  const [rtl] = React.useState(I18nManager.isRTL);
 
   const toggleTheme = () => {
     setTheme(theme => (theme === 'light' ? 'dark' : 'light'));
@@ -32,13 +32,13 @@ export const Main = () => {
       toggleTheme,
       toggleRTL,
       theme,
-      rtl: (rtl ? 'right' : 'left') as 'right' | 'left',
+      rtl: (rtl ? 'right' : 'left'),
     }),
     [rtl, theme, toggleRTL]
   )
 
   return (
-    <PreferencesContext.Provider value={preferences}>
+    // <PreferencesContext.Provider value={preferences}>
       <PaperProvider
         theme={
           theme === 'light'
@@ -54,6 +54,6 @@ export const Main = () => {
       >
         <RootNavigator />
       </PaperProvider>
-    </PreferencesContext.Provider>
+    // </PreferencesContext.Provider>
   )
 }

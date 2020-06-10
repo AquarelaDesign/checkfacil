@@ -1,17 +1,21 @@
 import React from 'react'
 import { TouchableOpacity } from 'react-native'
 import { createStackNavigator } from '@react-navigation/stack'
-import { DrawerNavigationProp } from '@react-navigation/drawer'
+// import { DrawerNavigationProp } from '@react-navigation/drawer'
 import { Appbar, Avatar, useTheme } from 'react-native-paper'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 
 import { BottomTabs } from './bottomTabs'
-import { Details } from './details'
-import { StackNavigatorParamlist } from './types'
 
 import logo from './assets/icon.png'
 
-const Stack = createStackNavigator<StackNavigatorParamlist>()
+const Details = () => {
+  return <Caption style={styles.centerText}>
+    Detalhes...
+  </Caption>
+}
+
+const Stack = createStackNavigator()
 
 export const StackNavigator = () => {
   const theme = useTheme()
@@ -43,7 +47,7 @@ export const StackNavigator = () => {
                 <TouchableOpacity
                   style={{ marginLeft: 10 }}
                   onPress={() => {
-                    ((navigation as any) as DrawerNavigationProp<{}>).openDrawer();
+                    (navigation).openDrawer();
                   }}
                 >
                   <Avatar.Image
@@ -91,7 +95,7 @@ export const StackNavigator = () => {
       <Stack.Screen
         name="Details"
         component={Details}
-        options={{ headerTitle: 'Tweet' }}
+        options={{ headerTitle: 'Detalhes' }}
       />
     </Stack.Navigator>
   )

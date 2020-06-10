@@ -1,9 +1,7 @@
 {
   "expo": {
-    "name": "CheckFacil",
+    "name": "Check Fácil",
     "slug": "checkfacil",
-    "privacy": "public",
-    "sdkVersion": "36.0.0",
     "platforms": [
       "ios",
       "android",
@@ -15,7 +13,7 @@
     "splash": {
       "image": "./src/assets/splash.png",
       "resizeMode": "cover",
-      "backgroundColor": "#1ba1f2"
+      "backgroundColor": "#ffffff"
     },
     "updates": {
       "fallbackToCacheTimeout": 0

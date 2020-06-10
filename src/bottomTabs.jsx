@@ -1,27 +1,51 @@
-import React from 'react'
+import React, { useState } from 'react'
 import color from 'color'
+
+import {
+  StyleSheet,
+  Modal,
+  View, 
+  TouchableOpacity ,
+} from 'react-native'
+
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs'
-import { useTheme, Portal, FAB } from 'react-native-paper'
+import { useTheme, Portal, FAB, Caption } from 'react-native-paper'
 import { useSafeArea } from 'react-native-safe-area-context'
 import { useIsFocused, RouteProp } from '@react-navigation/native'
+import { FontAwesome } from '@expo/vector-icons'
 
 import overlay from './overlay'
-// import { Foto } from './foto'
-import Foto from './camera/camera.page'
-import { Message } from './message'
-import { Albuns } from './albuns'
-import { StackNavigatorParamlist } from './types'
+import Foto from './camera'
+// import { Message } from './message'
+// import { Albuns } from './albuns'
+
+// const Foto = () => {
+//   return <Caption style={styles.centerText}>
+//     Foto...
+//   </Caption>
+// }
+
+const Message = () => {
+  return <Caption style={styles.centerText}>
+    Mensagem...
+  </Caption>
+}
+
+const Albuns = () => {
+  return <Caption style={styles.centerText}>
+    Albuns...
+  </Caption>
+}
 
 const Tab = createMaterialBottomTabNavigator()
 
-type Props = {
-  route: RouteProp<StackNavigatorParamlist, 'FotoList'>
-}
+export const BottomTabs = (props) => {
+  const [camera, setCamera] = useState(null)
+  const [open, setOpen] = useState(false)
 
-export const BottomTabs = (props: Props) => {
   const routeName = props.route.state
     ? props.route.state.routes[props.route.state.index].name
-    : 'Foto'
+    : 'Albuns'
 
   const theme = useTheme()
   const safeArea = useSafeArea()
@@ -30,11 +54,11 @@ export const BottomTabs = (props: Props) => {
   let icon = 'file-send'
 
   switch (routeName) {
-    case 'Foto':
-      icon = 'image-filter-center-focus'
-      break
+    // case 'Foto':
+    //   icon = 'image-filter-center-focus'
+    //   break
     case 'Albuns':
-      icon = 'file-send'
+      icon = 'image-filter-center-focus'
       break
     case 'Messages':
       icon = 'file-send'
@@ -45,17 +69,23 @@ export const BottomTabs = (props: Props) => {
   }
 
   const btnAction = () => {
+
+    if (routeName === 'Albuns') {
+      setOpen(true)
+      return      
+    }
+
     alert(routeName)
   }
 
   const tabBarColor = theme.dark
-    ? (overlay(6, theme.colors.surface) as string)
+    ? overlay(6, theme.colors.surface)
     : theme.colors.surface
 
   return (
     <React.Fragment>
       <Tab.Navigator
-        initialRouteName="Foto"
+        initialRouteName="Albuns"
         backBehavior="initialRoute"
         shifting={true}
         activeColor={theme.colors.primary}
@@ -65,14 +95,14 @@ export const BottomTabs = (props: Props) => {
           .string()}
         sceneAnimationEnabled={false}
       >
-        <Tab.Screen
+        {/* <Tab.Screen
           name="Foto"
           component={Foto}
           options={{
             tabBarIcon: 'camera',
             tabBarColor,
           }}
-        />
+        /> */}
         <Tab.Screen
           name="Albuns"
           component={Albuns}
@@ -90,7 +120,7 @@ export const BottomTabs = (props: Props) => {
           }}
         />
       </Tab.Navigator>
-      {/* <Portal>
+      <Portal>
         <FAB
           visible={isFocused}
           icon={icon}
@@ -107,7 +137,38 @@ export const BottomTabs = (props: Props) => {
           }}
           onPress={btnAction}
         />
-      </Portal> */}
+        
+        <Modal
+          animationType="slide"
+          transparent={false}
+          visible={open}
+        >
+          <View style={{ felx: 1, justifyContent: 'center', alignItems: 'center', margin: 20 }}>
+
+            <TouchableOpacity style={{ margin: 10 }} onPress={() => setOpen(false)}>
+              <FontAwesome name="window-close" size={30} color="#FF0000" />
+            </TouchableOpacity>
+
+            <Foto />
+          </View>
+        </Modal>
+
+      </Portal>
     </React.Fragment>
   )
 }
+
+const styles = StyleSheet.create({
+  scrollViewContent: {
+    flex: 1,
+    paddingHorizontal: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  centerText: {
+    textAlign: 'center',
+  },
+  button: {
+    marginTop: 20,
+  },
+})

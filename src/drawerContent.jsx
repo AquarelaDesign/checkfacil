@@ -11,7 +11,7 @@ import {
   Avatar,
   Caption,
   Drawer,
-  Paragraph,
+  // Paragraph,
   Switch,
   Text,
   Title,
@@ -24,29 +24,25 @@ import { PreferencesContext } from './context/preferencesContext'
 
 import logo from './assets/icon.png'
 
-
-type Props = DrawerContentComponentProps<DrawerNavigationProp>
-
-export function DrawerContent(props: Props) {
+export function DrawerContent({props}) {
   const paperTheme = useTheme();
-  const { rtl, theme, toggleRTL, toggleTheme } = React.useContext(
+  const { theme, toggleTheme } = React.useContext(
     PreferencesContext
-  );
+  )
 
-  const translateX = Animated.interpolate(props.progress, {
-    inputRange: [0, 0.5, 0.7, 0.8, 1],
-    outputRange: [-100, -85, -70, -45, 0],
-  })
+  // const translateX = Animated.interpolate(props.progress, {
+  //   inputRange: [0, 0.5, 0.7, 0.8, 1],
+  //   outputRange: [-100, -85, -70, -45, 0],
+  // })
 
   return (
     <DrawerContentScrollView {...props}>
       <Animated.View
-        //@ts-ignore
         style={[
           styles.drawerContent,
           {
             backgroundColor: paperTheme.colors.surface,
-            transform: [{ translateX }],
+            // transform: [{ translateX }],
           },
         ]}
       >
@@ -64,22 +60,6 @@ export function DrawerContent(props: Props) {
           </TouchableOpacity>
           <Title style={styles.title}>Check Fácil</Title>
           <Caption style={styles.caption}>atendimento@procyon.com.br</Caption>
-          {/* 
-          <View style={styles.row}>
-            <View style={styles.section}>
-              <Paragraph style={[styles.paragraph, styles.caption]}>
-                202
-              </Paragraph>
-              <Caption style={styles.caption}>Obserwuje</Caption>
-            </View>
-            <View style={styles.section}>
-              <Paragraph style={[styles.paragraph, styles.caption]}>
-                159
-              </Paragraph>
-              <Caption style={styles.caption}>Obserwujący</Caption>
-            </View>
-          </View> 
-          */}
         </View>
         <Drawer.Section style={styles.drawerSection}>
           <DrawerItem
@@ -124,14 +104,6 @@ export function DrawerContent(props: Props) {
               </View>
             </View>
           </TouchableRipple>
-          {/* <TouchableRipple onPress={toggleRTL}>
-            <View style={styles.preference}>
-              <Text>RTL</Text>
-              <View pointerEvents="none">
-                <Switch value={rtl === 'right'} />
-              </View>
-            </View>
-          </TouchableRipple> */}
         </Drawer.Section>
       </Animated.View>
     </DrawerContentScrollView>
