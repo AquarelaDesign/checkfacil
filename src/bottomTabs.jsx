@@ -12,28 +12,22 @@ import { createMaterialBottomTabNavigator } from '@react-navigation/material-bot
 import { useTheme, Portal, FAB, Caption } from 'react-native-paper'
 import { useSafeArea } from 'react-native-safe-area-context'
 import { useIsFocused, RouteProp } from '@react-navigation/native'
-import { FontAwesome } from '@expo/vector-icons'
+import { FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons'
 
 import overlay from './overlay'
-import Foto from './camera'
-// import { Message } from './message'
-// import { Albuns } from './albuns'
+import Foto from './components/camera/camera'
+import AddSign from './components/AddSign'
+import Albuns from './components/medialibrary/ImagesList'
 
-// const Foto = () => {
-//   return <Caption style={styles.centerText}>
-//     Foto...
-//   </Caption>
-// }
-
-const Message = () => {
+const Email = () => {
   return <Caption style={styles.centerText}>
-    Mensagem...
+    Email...
   </Caption>
 }
 
-const Albuns = () => {
+const Exit = () => {
   return <Caption style={styles.centerText}>
-    Albuns...
+    Saindo...
   </Caption>
 }
 
@@ -42,6 +36,7 @@ const Tab = createMaterialBottomTabNavigator()
 export const BottomTabs = (props) => {
   const [camera, setCamera] = useState(null)
   const [open, setOpen] = useState(false)
+  const [openSign, setOpenSign] = useState(false)
 
   const routeName = props.route.state
     ? props.route.state.routes[props.route.state.index].name
@@ -54,24 +49,27 @@ export const BottomTabs = (props) => {
   let icon = 'file-send'
 
   switch (routeName) {
-    // case 'Foto':
-    //   icon = 'image-filter-center-focus'
-    //   break
     case 'Albuns':
       icon = 'image-filter-center-focus'
       break
-    case 'Messages':
-      icon = 'file-send'
+    case 'Email':
+      icon = 'gesture'
       break
+    case 'Sair':
+        icon = 'close'
+        break
     default:
       icon = 'file-send'
       break
   }
 
   const btnAction = () => {
-
+    console.log('routeName', routeName)
     if (routeName === 'Albuns') {
       setOpen(true)
+      return      
+    } else if (routeName === 'Email') {
+      setOpenSign(true)
       return      
     }
 
@@ -95,14 +93,6 @@ export const BottomTabs = (props) => {
           .string()}
         sceneAnimationEnabled={false}
       >
-        {/* <Tab.Screen
-          name="Foto"
-          component={Foto}
-          options={{
-            tabBarIcon: 'camera',
-            tabBarColor,
-          }}
-        /> */}
         <Tab.Screen
           name="Albuns"
           component={Albuns}
@@ -112,10 +102,22 @@ export const BottomTabs = (props) => {
           }}
         />
         <Tab.Screen
-          name="Messages"
-          component={Message}
+          name="Email"
+          component={Email}
           options={{
-            tabBarIcon: 'message-text-outline',
+            tabBarIcon: ({ color }) => (
+              <MaterialCommunityIcons color={color} name="email" size={26} />
+            ),
+            tabBarColor,
+          }}
+        />
+        <Tab.Screen
+          name="Sair"
+          component={Exit}
+          options={{
+            tabBarIcon: ({ color }) => (
+              <MaterialCommunityIcons color={color} name="exit-run" size={26} />
+            ),
             tabBarColor,
           }}
         />
@@ -143,13 +145,44 @@ export const BottomTabs = (props) => {
           transparent={false}
           visible={open}
         >
-          <View style={{ felx: 1, justifyContent: 'center', alignItems: 'center', margin: 20 }}>
+          <View style={{ 
+            flex: 1, 
+            justifyContent: 'flex-end', 
+            alignItems: 'flex-end', 
+            margin: 0,
+            paddingHorizontal: 5,
+            paddingBottom: 5,
+            backgroundColor: '#2699F8'
+          }}>
 
             <TouchableOpacity style={{ margin: 10 }} onPress={() => setOpen(false)}>
-              <FontAwesome name="window-close" size={30} color="#FF0000" />
+              <FontAwesome name="window-close" size={30} color="#000" />
             </TouchableOpacity>
 
             <Foto />
+          </View>
+        </Modal>
+
+        <Modal
+          animationType="slide"
+          transparent={false}
+          visible={openSign}
+        >
+          <View style={{ 
+            flex: 1, 
+            justifyContent: 'flex-end', 
+            alignItems: 'flex-end', 
+            margin: 0,
+            paddingHorizontal: 5,
+            paddingBottom: 5,
+            backgroundColor: '#FFFFFF'
+          }}>
+
+            <TouchableOpacity style={{ margin: 10 }} onPress={() => setOpenSign(false)}>
+              <FontAwesome name="window-close" size={30} color="#000" />
+            </TouchableOpacity>
+
+            <AddSign />
           </View>
         </Modal>
 

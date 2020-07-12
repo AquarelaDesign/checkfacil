@@ -85,10 +85,9 @@ export const StackNavigator = () => {
         name="FotoList"
         component={BottomTabs}
         options={({ route }) => {
-          console.log('!@# options', { route });
           const routeName = route.state
             ? route.state.routes[route.state.index].name
-            : 'Foto'
+            : 'Check Fácil'
           return { headerTitle: routeName };
         }}
       />
