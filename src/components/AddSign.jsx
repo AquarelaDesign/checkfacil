@@ -27,11 +27,15 @@ function uuidv4() {
 }
 
 export default class AddSign extends React.Component {
+  constructor(props) {
+    super(props)
+  }
+
   state = {
     image: null,
     appState: AppState.currentState,
   }
-
+  
   handleAppStateChangeAsync = nextAppState => {
     if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
       if (isAndroid && this.sketch) {
@@ -63,7 +67,7 @@ export default class AddSign extends React.Component {
   }
 
   onReady = () => {
-    console.log('ready!')
+    // console.log('ready!')
   }
 
   saveCanvas = async () => {
@@ -78,25 +82,27 @@ export default class AddSign extends React.Component {
     const dataAtual = moment().format('YYYYMMDD')
     const album = await MediaLibrary.getAlbumAsync(`FDC${dataAtual}`)
 
-    console.log('album', album)
+    // console.log('album', album)
 
     if (album === null) {
       MediaLibrary.createAlbumAsync(`FDC${dataAtual}`, asset, false)
       .then((res) => {
-        console.log('Album criado!')
-        console.log('Album:', res)
+        // console.log('Album criado!')
+        // console.log('Album:', res)
+        this.props.close()
       })
       .catch(error => {
-        console.log('Erro ao Criar o Album', error)
+        // console.log('Erro ao Criar o Album', error)
       })
     } else {
       MediaLibrary.addAssetsToAlbumAsync(asset, album, false)
       .then((res) => {
-        console.log(`Foto Adicionada no Album FDC${dataAtual}!`)
-        console.log('Foto:', res)
+        // console.log(`Foto Adicionada no Album FDC${dataAtual}!`)
+        // console.log('Foto:', res)
+        this.props.close()
       })
       .catch(error => {
-        console.log('Erro ao Adicionar a foto no Album', error)
+        // console.log('Erro ao Adicionar a foto no Album', error)
       })
     }
   }

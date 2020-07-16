@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import * as MediaLibrary from 'expo-media-library'
-import { FontAwesome } from '@expo/vector-icons'
+import { FontAwesome, MaterialIcons } from '@expo/vector-icons'
 
 import { 
   View, 
@@ -9,7 +9,10 @@ import {
   FlatList, 
   Image, 
   TouchableOpacity,
+  TouchableHighlight,
   Dimensions,
+  Modal,
+  CheckBox,
 } from 'react-native'
 
 import folder from '../../assets/folder-pictures.png'
@@ -24,22 +27,47 @@ const Colunas = 3
 const _width = ((width - 20)  / Colunas)
 const _height = _width * 1.2
 
-function ImagesList() {
+function ImagesList({ route }) {
   const [ hasPermission, setHasPermission ] = useState(null)
   const [ isAlbum, setIsAlbum ] = useState(true)
   const [ album, setAlbum ] = useState(null)
   const [ albuns, setAlbuns ] = useState(null)
   const [ medias, setMedias ] = useState(null)
   const [ isFetching, setIsFetching ] = useState(false)
+  const [ atualiza, setAtualiza ] = useState(route?.params?.atualiza ?  route.params.atualiza : false)
+  
+  const [ imageVisible, setImageVisible ] = useState(false)
+  const [ contentImage, setContentImage ] = useState(null)
+
+  const [ modalVisible, setModalVisible ] = useState(false)
+  const [ tipo, setTipo ] = useState('')
+  const [ contentItem, setContentItem ] = useState(null)
+  
+  const [checkedItems, setCheckedItems] = useState([])
+
+  const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
+
+  // console.log('*** Atualiza', atualiza,  route?.params?.atualiza ?  route.params.atualiza : false)
 
   useEffect(() => {
-    console.log('isAlbum', isAlbum)
+    try {
+      // await sleep(5000)
+      if (atualiza) {
+        onRefresh()
+      }
+    }
+    catch (e) {
+      console.log('*** Deu Erro!!')
+    }
+  
     if (isAlbum) {
+      setTipo('do Album')
       buscaAlbuns()
     } else {
+      setTipo('da Imagem')
       buscaMedias(album)
     }
-  }, [])
+  }, [atualiza])
 
   const buscaAlbuns = () => {
     (async () => {
@@ -75,7 +103,7 @@ function ImagesList() {
 
         const _album = await MediaLibrary.getAlbumAsync(Album)
 
-        console.log('_album', _album)
+        // console.log('_album', _album)
         if (_album === null) {
           return null
         } else {
@@ -83,9 +111,15 @@ function ImagesList() {
             album: _album,
             sortBy: MediaLibrary.SortBy.creationTime,
           })
+          
+          let tmpMedia = []
+          _medias.assets.map(item => {
+            _item = {...item, checked: false}
+            tmpMedia.push(_item)
+          })
+          // console.log('*** _medias', tmpMedia)
 
-          console.log('medias', _medias)
-          setMedias(_medias.assets)
+          setMedias(tmpMedia)
         }
       }
       catch (error) {
@@ -107,6 +141,25 @@ function ImagesList() {
     } else {
       buscaMedias(album)
     }
+    // setAtualiza(false)
+  }
+
+  const onDelete = async () => {
+    console.log('*** onDelete', isAlbum)
+    if (isAlbum) {
+      let _albuns = []
+      _albuns.push(contentItem)
+      const _medias = await MediaLibrary.deleteAlbumsAsync(_albuns, true)
+    } else {
+      let _assets = []
+      const image = await MediaLibrary.getAssetInfoAsync(contentItem)
+      _assets.push(image)
+      const _medias = await MediaLibrary.removeAssetsFromAlbumAsync(_assets, contentItem.albumId)
+    }
+
+    setContentItem(null)
+    setIsFetching(true)
+    onRefresh()
   }
 
   const retData = (texto) => {
@@ -115,6 +168,120 @@ function ImagesList() {
     } 
     return texto
   }
+
+  const handleChange = (e, itemID) => {
+    let _medias = medias
+    console.log("*** medias-1: ", itemID, _medias)
+    
+    let tmpMedia = []
+    _medias.map(item => {
+      if (item.id === itemID) {
+        _item = {...item, checked: !item.checked}
+      } else {
+        _item = item
+      }
+      tmpMedia.push(_item)
+    })
+    setMedias(tmpMedia)
+    setIsFetching(true)
+    onRefresh()
+
+    // _medias[itemID.toString()].checked=!_medias[itemID.toString()].checked
+    console.log("*** medias-2: ", itemID, tmpMedia)
+    console.log("*** medias-3: ", itemID, medias)
+
+    // setMedias({medias:medias})
+    
+    // const target = event.target
+    // const value = target.type === "checkbox" ? target.checked : target.value
+    // const name = target.name
+
+    // setCheckedItems(oldItens => ({
+    //   ...oldItens, 
+    //   [name] : value 
+    // }))
+
+    console.log("*** checkedItems: ", checkedItems)
+}
+
+  const viewImage = (item) => {
+    console.log('*** Item', item)
+    setContentImage(item)
+    setImageVisible(true)
+  }
+
+  const confModal = async (item) => {
+    setContentItem(item)
+    setModalVisible(true)
+  }
+
+  const ImagemModal = () => (
+    <Modal
+      animationType="slide"
+      transparent={true}
+      visible={imageVisible}
+      onRequestClose={() => {
+        // Alert.alert("Modal has been closed.");
+      }}
+    >
+      <View style={styles.centeredView}>
+        <View style={styles.modalImageView}>
+          {contentImage && <Image style={styles.imageView} source={{ uri: contentImage.uri }} />}
+
+          <View style={styles.modalButtons} >
+            <TouchableHighlight
+              style={{ ...styles.naoButton, backgroundColor: "#2196F3" }}
+              onPress={() => {
+                setImageVisible(!imageVisible)
+              }}
+            >
+              <Text style={styles.textStyle}>Fechar</Text>
+            </TouchableHighlight>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  )
+ 
+  const ViewModal = () => (
+    <Modal
+      animationType="slide"
+      transparent={true}
+      visible={modalVisible}
+      onRequestClose={() => {
+        // Alert.alert("Modal has been closed.");
+      }}
+    >
+      <View style={styles.centeredView}>
+        <View style={styles.modalView}>
+          <Text style={styles.modalText}>Confirma a Exclusão {tipo}?</Text>
+
+          <View style={styles.modalButtons} >
+            <TouchableHighlight
+              style={{ ...styles.simButton, backgroundColor: "#2196F3" }}
+              onPress={() => {
+                // setConfirm(true)
+                onDelete()
+                setModalVisible(!modalVisible)
+              }}
+            >
+              <Text style={styles.textStyle}>Sim</Text>
+            </TouchableHighlight>
+
+            <TouchableHighlight
+              style={{ ...styles.naoButton, backgroundColor: "#2196F3" }}
+              onPress={() => {
+                // setConfirm(false)
+                setModalVisible(!modalVisible)
+              }}
+            >
+              <Text style={styles.textStyle}>Não</Text>
+            </TouchableHighlight>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  )
 
   if (hasPermission === null) {
     return <View />
@@ -128,6 +295,7 @@ function ImagesList() {
     if (isAlbum) {
       return (
         <View style={styles.container}>
+          <ViewModal />
           {albuns &&
             <FlatList
               key={1}
@@ -143,7 +311,11 @@ function ImagesList() {
                   <TouchableOpacity onPress={() => openFolder(item.title)} style={styles.button}>
                     <Image style={styles.thumbnail} source={folder} />
                     <Text style={styles.data}>{retData(item.title)}</Text>
-                  </TouchableOpacity> 
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => confModal(item)} style={styles.delete}>
+                    <MaterialIcons name="delete-forever" size={30} color="#f05a5b" />
+                  </TouchableOpacity>
+                  {/* Incluir Botao Excluir Folder float */}
                 </View>
               )}
             />
@@ -153,6 +325,8 @@ function ImagesList() {
     } else {
       return (
         <View style={styles.container}>
+          <ViewModal />
+          <ImagemModal />
           <Text style={styles.titulo}>{retData(album)}</Text>
           <TouchableOpacity style={{ position: 'absolute', right: 10, marginTop: -30 }} onPress={() => {
             setIsAlbum(true)
@@ -173,7 +347,19 @@ function ImagesList() {
               showsHorizontalScrollIndicator={false}
               renderItem={({ item }) => (
                 <View style={styles.listItem} key={item.id}>
-                  <Image style={styles.thumbnail} source={{ uri: item.uri }} />
+                  {/* Incluir Botao Selecionar Arquivo float */}
+                  <CheckBox
+                    name={item.id}
+                    checked={item.checked} 
+                    onChange={(e) => handleChange(e, item.id)}
+                    // onPress={() => handleChange(item.id)}
+                  />
+                  <TouchableOpacity onPress={() => viewImage(item)} style={styles.button}>
+                    <Image style={styles.thumbnail} source={{ uri: item.uri }} />
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => confModal(item)} style={styles.deleteImage}>
+                    <MaterialIcons name="delete-forever" size={30} color="#f05a5b" />
+                  </TouchableOpacity>
                 </View>
               )}
             />
@@ -216,7 +402,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     marginBottom: 15,
   },
-
   bold: {
     fontWeight: 'bold',
   },
@@ -231,6 +416,7 @@ const styles = StyleSheet.create({
     color: '#999',
     marginTop: 5,
   },
+
   button: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -240,6 +426,98 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 15,
   },
+  delete: {
+    flex: 1,
+    position: 'absolute',
+    right: 5,
+    bottom: 30,
+  },
+  deleteImage: {
+    flex: 1,
+    position: 'absolute',
+    right: 2,
+    bottom: 2,
+  },
+  select: {
+    position: 'absolute',
+    justifyContent: 'flex-end',
+    alignItems: 'flex-end',
+  },
+
+  modalImageView: {
+    margin: 10,
+    backgroundColor: "white",
+    borderRadius: 5,
+    padding: 5,
+    paddingBottom: 20,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    height: height - 80,
+  },
+  
+  imageView: {
+    // width: _width,
+    // height: _height,
+    width: '100%',
+    height: '100%',
+    resizeMode: 'contain',
+    borderRadius: 2,
+  },
+
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 5,
+    padding: 20,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    height: 130,
+  },
+  modalButtons: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  simButton: {
+    // backgroundColor: "#F194FF",
+    borderRadius: 5,
+    padding: 5,
+    elevation: 2,
+    width: 100,
+    marginRight: 30,
+  },
+  naoButton: {
+    // backgroundColor: "#F194FF",
+    borderRadius: 5,
+    padding: 5,
+    elevation: 2,
+    width: 100,
+  },
+  textStyle: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center"
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center"
+  }
+
 })
 
 export default ImagesList

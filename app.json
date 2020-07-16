@@ -18,14 +18,29 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
+    "notification": {
+      "icon": "./src/assets/icon-pb.png",
+      "color": "#87CEEB",
+      "iosDisplayInForeground": true
+    },
     "assetBundlePatterns": [
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.procyon.fdc",
+      "buildNumber": "1.0.0"
     },
     "android": {
-      "permissions": ["CAMERA"]
+      "permissions": ["CAMERA"],
+      "package": "com.procyon.fdc",
+      "versionCode": 1,
+      "googleServicesFile": "./google-services.json",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyBqitr0K9UhX_Se7tKwdcaZoPXE-eViE4Q"
+        }
+      }
     }
   }
 }

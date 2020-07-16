@@ -64,7 +64,7 @@ export const BottomTabs = (props) => {
   }
 
   const btnAction = () => {
-    console.log('routeName', routeName)
+    // console.log('routeName', routeName)
     if (routeName === 'Albuns') {
       setOpen(true)
       return      
@@ -74,6 +74,12 @@ export const BottomTabs = (props) => {
     }
 
     alert(routeName)
+  }
+
+  const closeSign = () => {
+    setOpenSign(false)
+    props.navigation.jumpTo('Albuns', { atualiza: true })
+    // console.log(props)
   }
 
   const tabBarColor = theme.dark
@@ -182,7 +188,7 @@ export const BottomTabs = (props) => {
               <FontAwesome name="window-close" size={30} color="#000" />
             </TouchableOpacity>
 
-            <AddSign />
+            <AddSign close={closeSign} />
           </View>
         </Modal>
 

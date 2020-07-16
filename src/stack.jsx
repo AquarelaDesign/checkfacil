@@ -5,6 +5,8 @@ import { createStackNavigator } from '@react-navigation/stack'
 import { Appbar, Avatar, useTheme } from 'react-native-paper'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 
+import Login from './components/Login'
+import NovoUsuario from './components/NovoUsuario'
 import { BottomTabs } from './bottomTabs'
 
 import logo from './assets/icon.png'
@@ -22,7 +24,7 @@ export const StackNavigator = () => {
 
   return (
     <Stack.Navigator
-      initialRouteName="FotoList"
+      initialRouteName="Login"
       headerMode="screen"
       screenOptions={{
         header: ({ scene, previous, navigation }) => {
@@ -38,16 +40,16 @@ export const StackNavigator = () => {
             <Appbar.Header
               theme={{ colors: { primary: theme.colors.surface } }}
             >
-              {previous ? (
+              {/* {previous ? (
                 <Appbar.BackAction
                   onPress={navigation.goBack}
                   color={theme.colors.primary}
                 />
-              ) : (
+              ) : ( */}
                 <TouchableOpacity
                   style={{ marginLeft: 10 }}
                   onPress={() => {
-                    (navigation).openDrawer();
+                    (navigation).openDrawer()
                   }}
                 >
                   <Avatar.Image
@@ -55,7 +57,7 @@ export const StackNavigator = () => {
                     source={logo}
                   />
                 </TouchableOpacity>
-              )}
+              {/* )} */}
               <Appbar.Content
                 title={
                   title
@@ -82,13 +84,31 @@ export const StackNavigator = () => {
       }}
     >
       <Stack.Screen
-        name="FotoList"
+        name="Login"
+        component={Login}
+        options={{ 
+          headerTitle: 'Login',
+          headerShown: false
+        }}
+      />
+      <Stack.Screen
+        name="NovoUsuario"
+        component={NovoUsuario}
+        options={{ 
+          headerTitle: 'NovoUsuario',
+          // headerShown: false
+        }}
+      />
+      <Stack.Screen
+        name="Home"
         component={BottomTabs}
         options={({ route }) => {
           const routeName = route.state
             ? route.state.routes[route.state.index].name
             : 'Check Fácil'
-          return { headerTitle: routeName };
+          return { 
+            headerTitle: routeName
+          }
         }}
       />
       <Stack.Screen

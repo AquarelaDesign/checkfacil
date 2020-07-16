@@ -25,7 +25,7 @@ import { PreferencesContext } from './context/preferencesContext'
 import logo from './assets/icon.png'
 
 export function DrawerContent({props}) {
-  const paperTheme = useTheme();
+  const paperTheme = useTheme()
   const { theme, toggleTheme } = React.useContext(
     PreferencesContext
   )
@@ -50,7 +50,7 @@ export function DrawerContent({props}) {
           <TouchableOpacity
             style={{ marginLeft: 10 }}
             onPress={() => {
-              props.navigation.toggleDrawer();
+              //props.navigation.toggleDrawer();
             }}
           >
             <Avatar.Image
@@ -95,16 +95,18 @@ export function DrawerContent({props}) {
             onPress={() => {}}
           />
         </Drawer.Section>
+{/*
         <Drawer.Section title="Preferências">
           <TouchableRipple onPress={toggleTheme}>
             <View style={styles.preference}>
               <Text>Dark Theme</Text>
               <View pointerEvents="none">
-                <Switch value={theme === 'dark'} />
+                <Switch value={theme === 'dark' ? 'dark' : 'light'} />
               </View>
             </View>
           </TouchableRipple>
         </Drawer.Section>
+*/}
       </Animated.View>
     </DrawerContentScrollView>
   );
