@@ -6,6 +6,7 @@ import { useTheme } from 'react-native-paper'
 
 import { StackNavigator } from './stack'
 import { DrawerContent } from './drawerContent'
+import Store from './components/Store'
 
 const Drawer = createDrawerNavigator();
 
@@ -15,9 +16,11 @@ export const RootNavigator = () => {
 
   return (
     <NavigationContainer theme={navigationTheme}>
-      <Drawer.Navigator drawerContent={props => <DrawerContent {...props} />}>
-        <Drawer.Screen name="Home" component={StackNavigator} />
-      </Drawer.Navigator>
+      <Store>
+        <Drawer.Navigator drawerContent={props => <DrawerContent {...props} />}>
+          <Drawer.Screen name="Home" component={StackNavigator} />
+        </Drawer.Navigator>
+      </Store>
     </NavigationContainer>
   )
 }

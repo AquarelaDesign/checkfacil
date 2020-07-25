@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import * as MediaLibrary from 'expo-media-library'
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons'
 
@@ -12,8 +12,11 @@ import {
   TouchableHighlight,
   Dimensions,
   Modal,
-  CheckBox,
+  // CheckBox,
 } from 'react-native'
+
+import CheckBox from '../CheckBox'
+import { Context } from '../Store'
 
 import folder from '../../assets/folder-pictures.png'
 
@@ -31,8 +34,8 @@ function ImagesList({ route }) {
   const [ hasPermission, setHasPermission ] = useState(null)
   const [ isAlbum, setIsAlbum ] = useState(true)
   const [ album, setAlbum ] = useState(null)
-  const [ albuns, setAlbuns ] = useState(null)
-  const [ medias, setMedias ] = useState(null)
+  const [ albuns, setAlbuns ] = useState([])
+  const [ medias, setMedias ] = useState([])
   const [ isFetching, setIsFetching ] = useState(false)
   const [ atualiza, setAtualiza ] = useState(route?.params?.atualiza ?  route.params.atualiza : false)
   
@@ -43,7 +46,7 @@ function ImagesList({ route }) {
   const [ tipo, setTipo ] = useState('')
   const [ contentItem, setContentItem ] = useState(null)
   
-  const [checkedItems, setCheckedItems] = useState([])
+  const [state, dispatch] = useContext(Context)
 
   const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 
@@ -103,7 +106,6 @@ function ImagesList({ route }) {
 
         const _album = await MediaLibrary.getAlbumAsync(Album)
 
-        // console.log('_album', _album)
         if (_album === null) {
           return null
         } else {
@@ -114,11 +116,17 @@ function ImagesList({ route }) {
           
           let tmpMedia = []
           _medias.assets.map(item => {
-            _item = {...item, checked: false}
+            let _item = {...item, checked: false}
+            if (state.anexos) {
+              state.anexos.map(anexo => {
+                if (anexo.id === item.id) {
+                  _item = {...item, checked: anexo.checked}
+                  return
+                }
+              })
+            }
             tmpMedia.push(_item)
           })
-          // console.log('*** _medias', tmpMedia)
-
           setMedias(tmpMedia)
         }
       }
@@ -141,11 +149,9 @@ function ImagesList({ route }) {
     } else {
       buscaMedias(album)
     }
-    // setAtualiza(false)
   }
 
   const onDelete = async () => {
-    console.log('*** onDelete', isAlbum)
     if (isAlbum) {
       let _albuns = []
       _albuns.push(contentItem)
@@ -155,6 +161,7 @@ function ImagesList({ route }) {
       const image = await MediaLibrary.getAssetInfoAsync(contentItem)
       _assets.push(image)
       const _medias = await MediaLibrary.removeAssetsFromAlbumAsync(_assets, contentItem.albumId)
+      dispatch({type: 'REMOVE_ANEXO', payload: _item})
     }
 
     setContentItem(null)
@@ -169,43 +176,26 @@ function ImagesList({ route }) {
     return texto
   }
 
-  const handleChange = (e, itemID) => {
-    let _medias = medias
-    console.log("*** medias-1: ", itemID, _medias)
-    
+  const handleChange = async (e, itemID) => {
     let tmpMedia = []
-    _medias.map(item => {
+    let _item = {}
+    await medias.map(item => {
       if (item.id === itemID) {
         _item = {...item, checked: !item.checked}
+        if (_item.checked){
+          dispatch({type: 'ADD_ANEXO', payload: _item})
+        } else {
+          dispatch({type: 'REMOVE_ANEXO', payload: _item})
+        }
       } else {
         _item = item
       }
       tmpMedia.push(_item)
     })
     setMedias(tmpMedia)
-    setIsFetching(true)
-    onRefresh()
-
-    // _medias[itemID.toString()].checked=!_medias[itemID.toString()].checked
-    console.log("*** medias-2: ", itemID, tmpMedia)
-    console.log("*** medias-3: ", itemID, medias)
-
-    // setMedias({medias:medias})
-    
-    // const target = event.target
-    // const value = target.type === "checkbox" ? target.checked : target.value
-    // const name = target.name
-
-    // setCheckedItems(oldItens => ({
-    //   ...oldItens, 
-    //   [name] : value 
-    // }))
-
-    console.log("*** checkedItems: ", checkedItems)
-}
+  }
 
   const viewImage = (item) => {
-    console.log('*** Item', item)
     setContentImage(item)
     setImageVisible(true)
   }
@@ -348,12 +338,14 @@ function ImagesList({ route }) {
               renderItem={({ item }) => (
                 <View style={styles.listItem} key={item.id}>
                   {/* Incluir Botao Selecionar Arquivo float */}
-                  <CheckBox
-                    name={item.id}
-                    checked={item.checked} 
-                    onChange={(e) => handleChange(e, item.id)}
-                    // onPress={() => handleChange(item.id)}
-                  />
+                  <View style={styles.checkImage}>
+                    <CheckBox
+                      iconColor="#225378"
+                      checkColor="#225378"
+                      isChecked={item.checked}
+                      onChange={(e) => handleChange(e, item.id)}
+                    />
+                  </View>
                   <TouchableOpacity onPress={() => viewImage(item)} style={styles.button}>
                     <Image style={styles.thumbnail} source={{ uri: item.uri }} />
                   </TouchableOpacity>
@@ -437,6 +429,13 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 2,
     bottom: 2,
+  },
+  checkImage: {
+    flex: 1,
+    position: 'absolute',
+    top: 5,
+    left: 8,
+    zIndex: 10,
   },
   select: {
     position: 'absolute',

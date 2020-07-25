@@ -18,12 +18,13 @@ import overlay from './overlay'
 import Foto from './components/camera/camera'
 import AddSign from './components/AddSign'
 import Albuns from './components/medialibrary/ImagesList'
+import Email from './components/Email/Email'
 
-const Email = () => {
-  return <Caption style={styles.centerText}>
-    Email...
-  </Caption>
-}
+// const Email = () => {
+//   return <Caption style={styles.centerText}>
+//     Email...
+//   </Caption>
+// }
 
 const Exit = () => {
   return <Caption style={styles.centerText}>
