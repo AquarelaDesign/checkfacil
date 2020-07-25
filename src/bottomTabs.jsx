@@ -4,12 +4,17 @@ import color from 'color'
 import {
   StyleSheet,
   Modal,
-  View, 
-  TouchableOpacity ,
+  View,
+  TouchableOpacity,
 } from 'react-native'
 
+import {
+  useTheme,
+  Portal,
+  FAB,
+} from 'react-native-paper'
+
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs'
-import { useTheme, Portal, FAB, Caption } from 'react-native-paper'
 import { useSafeArea } from 'react-native-safe-area-context'
 import { useIsFocused, RouteProp } from '@react-navigation/native'
 import { FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons'
@@ -19,23 +24,12 @@ import Foto from './components/camera/camera'
 import AddSign from './components/AddSign'
 import Albuns from './components/medialibrary/ImagesList'
 import Email from './components/Email/Email'
-
-// const Email = () => {
-//   return <Caption style={styles.centerText}>
-//     Email...
-//   </Caption>
-// }
-
-const Exit = () => {
-  return <Caption style={styles.centerText}>
-    Saindo...
-  </Caption>
-}
+import Exit from './components/Exit/Exit'
 
 const Tab = createMaterialBottomTabNavigator()
 
 export const BottomTabs = (props) => {
-  const [camera, setCamera] = useState(null)
+  // const [camera, setCamera] = useState(null)
   const [open, setOpen] = useState(false)
   const [openSign, setOpenSign] = useState(false)
 
@@ -57,8 +51,8 @@ export const BottomTabs = (props) => {
       icon = 'gesture'
       break
     case 'Sair':
-        icon = 'close'
-        break
+      icon = 'close'
+      break
     default:
       icon = 'file-send'
       break
@@ -68,10 +62,10 @@ export const BottomTabs = (props) => {
     // console.log('routeName', routeName)
     if (routeName === 'Albuns') {
       setOpen(true)
-      return      
+      return
     } else if (routeName === 'Email') {
       setOpenSign(true)
-      return      
+      return
     }
 
     alert(routeName)
@@ -131,7 +125,7 @@ export const BottomTabs = (props) => {
       </Tab.Navigator>
       <Portal>
         <FAB
-          visible={isFocused}
+          visible={routeName === 'Sair' ? false : isFocused}
           icon={icon}
           style={{
             position: 'absolute',
@@ -146,16 +140,16 @@ export const BottomTabs = (props) => {
           }}
           onPress={btnAction}
         />
-        
+
         <Modal
           animationType="slide"
           transparent={false}
           visible={open}
         >
-          <View style={{ 
-            flex: 1, 
-            justifyContent: 'flex-end', 
-            alignItems: 'flex-end', 
+          <View style={{
+            flex: 1,
+            justifyContent: 'flex-end',
+            alignItems: 'flex-end',
             margin: 0,
             paddingHorizontal: 5,
             paddingBottom: 5,
@@ -175,10 +169,10 @@ export const BottomTabs = (props) => {
           transparent={false}
           visible={openSign}
         >
-          <View style={{ 
-            flex: 1, 
-            justifyContent: 'flex-end', 
-            alignItems: 'flex-end', 
+          <View style={{
+            flex: 1,
+            justifyContent: 'flex-end',
+            alignItems: 'flex-end',
             margin: 0,
             paddingHorizontal: 5,
             paddingBottom: 5,

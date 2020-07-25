@@ -29,6 +29,7 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 import { TextInputMask } from 'react-native-masked-text'
 import { Button } from 'react-native-elements'
 import RNPickerSelect, { defaultStyles } from 'react-native-picker-select'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 const querystring = require('querystring')
 const { width } = Dimensions.get('window')
@@ -331,8 +332,8 @@ const NovoUsuario = ({ navigation, pemail }) => {
   }
 
   return (
-    <KeyboardAvoidingView behavior="height" style={[GlobalStyles.container, {paddingTop: 5,}]}>
-    {/* <SafeAreaView style={[GlobalStyles.container, {paddingTop: 40,}]}> */}
+    <SafeAreaView style={[GlobalStyles.container, {paddingTop: -40,}]}>
+    {/* <KeyboardAvoidingView behavior="height" style={[GlobalStyles.container, {paddingTop: 5,}]}> */}
       <LinearGradient
         colors={bg_colors}
         style={GlobalStyles.background}
@@ -677,11 +678,12 @@ const NovoUsuario = ({ navigation, pemail }) => {
             disabled={!habilitaBotao}
           />
 
-          </ScrollView>
+        </ScrollView>
 
         {isLoading ? Loading() : <></>}
       </LinearGradient>
-    </KeyboardAvoidingView>
+    {/* </KeyboardAvoidingView> */}
+    </SafeAreaView>
   )
 }
 

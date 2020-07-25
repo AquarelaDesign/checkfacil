@@ -18,7 +18,7 @@ import {
 
 import { Button, Overlay, Divider } from 'react-native-elements'
 
-import Icon from 'react-native-vector-icons/FontAwesome'
+// import Icon from 'react-native-vector-icons/FontAwesome'
 import * as Facebook from 'expo-facebook'
 
 import { Notifications } from 'expo'

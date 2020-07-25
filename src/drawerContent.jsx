@@ -11,11 +11,7 @@ import {
   Avatar,
   Caption,
   Drawer,
-  // Paragraph,
-  Switch,
-  Text,
   Title,
-  TouchableRipple,
   useTheme,
 } from 'react-native-paper'
 import Animated from 'react-native-reanimated'
@@ -91,7 +87,7 @@ export function DrawerContent({props}) {
             icon={({ color, size }) => (
               <Feather name="headphones" color={color} size={size} />
             )}
-            label="+55 (41) 3311-6756"
+            label="+55 (41) 3311-6754"
             onPress={() => {}}
           />
         </Drawer.Section>
