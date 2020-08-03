@@ -1,5 +1,7 @@
 {
   "main": "node_modules/expo/AppEntry.js",
+  "license" : "SEE LICENSE IN LICENSE",
+  "homepage": "https://fichadocarro.com.br",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",

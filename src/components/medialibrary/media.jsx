@@ -1,5 +1,6 @@
 import React from 'react'
 import * as MediaLibrary from 'expo-media-library'
+import * as Permissions from 'expo-permissions'
 import { Button, View, } from 'react-native'
 
 import ImagesList from './ImagesList'
@@ -10,8 +11,10 @@ export default class Media extends React.Component {
     medias: null,
   }
   
-  async UNSAFE_componentWillMount() {
-    const { status } = await MediaLibrary.requestPermissionsAsync()
+  UNSAFE_componentWillMount() {
+    
+    // const { status } = await MediaLibrary.requestPermissionsAsync()
+    const { status } = await Permissions.getAsync(Permissions.CAMERA_ROLL, Permissions.LOCATION)
     this.setState({ hasPermission: status === "granted" })
     this.mediaLibraryAsync()
   }
@@ -42,7 +45,7 @@ export default class Media extends React.Component {
     } else if (hasPermission === false) {
       return (
         <View>
-          <Text>Sem acesso a miblioteca de midias</Text>
+          <Text>Sem acesso a biblioteca de midias</Text>
         </View>
       )
     } else {
