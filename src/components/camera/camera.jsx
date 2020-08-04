@@ -8,6 +8,7 @@ import {
   View,
   StyleSheet,
   Text,
+  ToastAndroid,
   TouchableOpacity,
 } from "react-native"
 
@@ -16,6 +17,10 @@ import 'moment/locale/pt-br'
 moment.locale('pt-BR')
 
 export default class Foto extends React.Component {
+  constructor(props) {
+    super(props)
+  }
+
   state = {
     hasCameraPermission: null,
     type: Camera.Constants.Type.back,
@@ -27,6 +32,10 @@ export default class Foto extends React.Component {
   async UNSAFE_componentWillMount() {
     const { status } = await Camera.requestPermissionsAsync()
     this.setState({ hasCameraPermission: status === "granted" })
+  }
+
+  UNSAFE_componentWillUnmount() {
+    this.props.close()
   }
 
   cameraChange = () => {
@@ -60,23 +69,42 @@ export default class Foto extends React.Component {
     const dataAtual = moment().format('YYYYMMDD')
     const album = await MediaLibrary.getAlbumAsync(`FDC${dataAtual}`)
 
+    console.log('album', album)
+
     if (album === null) {
       MediaLibrary.createAlbumAsync(`FDC${dataAtual}`, asset, false)
       .then((res) => {
         console.log('Album criado!')
         console.log('Album:', res)
+        this.props.close()
       })
       .catch(error => {
         console.log('Erro ao Criar o Album', error)
       })
     } else {
-      MediaLibrary.addAssetsToAlbumAsync(`FDC${dataAtual}`, asset, false)
+      MediaLibrary.addAssetsToAlbumAsync(asset, album, false)
       .then((res) => {
-        console.log(`Foto Adicionada no Album FDC${dataAtual}!`)
-        console.log('Foto:', res)
+
+        ToastAndroid.showWithGravityAndOffset(
+          "Imagem Adicionada no Album! Atualize a lista para visualizar.",
+          ToastAndroid.LONG,
+          ToastAndroid.TOP,
+          25,
+          50
+        )
+        
+        // console.log(`Foto Adicionada no Album FDC${dataAtual}!`)
+        // console.log('Foto:', res)
       })
       .catch(error => {
-        console.log('Erro ao Adicionar a foto no Album', error)
+        ToastAndroid.showWithGravityAndOffset(
+          "Erro ao adicionar a Imagem no Album!",
+          ToastAndroid.LONG,
+          ToastAndroid.TOP,
+          25,
+          50
+        )
+        // console.log('Erro ao Adicionar a foto no Album', error)
       })
     }
     return null
@@ -137,7 +165,7 @@ export default class Foto extends React.Component {
                   </TouchableOpacity>
                 </View>
               </>
-            ) : null}
+            ) : (
             <View style={styles.captureButtonView}>
               <TouchableOpacity
                 style={styles.cameraButtons}
@@ -146,6 +174,7 @@ export default class Foto extends React.Component {
                 <FontAwesome name="save" size={23} color='#fff' />
               </TouchableOpacity>
             </View>
+            )}
           </View>
         </View> 
       )

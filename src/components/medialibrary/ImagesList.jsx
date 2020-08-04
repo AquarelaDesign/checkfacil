@@ -48,11 +48,12 @@ function ImagesList({ route }) {
   
   const [state, dispatch] = useContext(Context)
 
-  const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
+  // const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 
   // console.log('*** Atualiza', atualiza,  route?.params?.atualiza ?  route.params.atualiza : false)
 
   useEffect(() => {
+    // setIsFetching(true)
     try {
       // await sleep(5000)
       if (atualiza) {

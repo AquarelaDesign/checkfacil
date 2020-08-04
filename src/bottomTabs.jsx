@@ -28,6 +28,8 @@ import Exit from './components/Exit/Exit'
 
 const Tab = createMaterialBottomTabNavigator()
 
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
+
 export const BottomTabs = (props) => {
   // const [camera, setCamera] = useState(null)
   const [open, setOpen] = useState(false)
@@ -71,10 +73,11 @@ export const BottomTabs = (props) => {
     alert(routeName)
   }
 
-  const closeSign = () => {
+  const closeSign = async () => {
     setOpenSign(false)
+    // props.navigation.jumpTo('Sair')
+    await sleep(300)
     props.navigation.jumpTo('Albuns', { atualiza: true })
-    // console.log(props)
   }
 
   const tabBarColor = theme.dark
@@ -156,11 +159,13 @@ export const BottomTabs = (props) => {
             backgroundColor: '#2699F8'
           }}>
 
-            <TouchableOpacity style={{ margin: 10 }} onPress={() => setOpen(false)}>
+            <TouchableOpacity style={{ margin: 10 }} onPress={() => {
+              setOpen(false); closeSign();
+              }}>
               <FontAwesome name="window-close" size={30} color="#000" />
             </TouchableOpacity>
 
-            <Foto />
+            <Foto close={closeSign} />
           </View>
         </Modal>
 
