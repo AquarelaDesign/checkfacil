@@ -75,7 +75,7 @@ export const BottomTabs = (props) => {
 
   const closeSign = async () => {
     setOpenSign(false)
-    // props.navigation.jumpTo('Sair')
+    setOpen(false)
     await sleep(300)
     props.navigation.jumpTo('Albuns', { atualiza: true })
   }
@@ -159,9 +159,7 @@ export const BottomTabs = (props) => {
             backgroundColor: '#2699F8'
           }}>
 
-            <TouchableOpacity style={{ margin: 10 }} onPress={() => {
-              setOpen(false); closeSign();
-              }}>
+            <TouchableOpacity style={{ margin: 10 }} onPress={() => {closeSign()}}>
               <FontAwesome name="window-close" size={30} color="#000" />
             </TouchableOpacity>
 

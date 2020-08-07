@@ -87,9 +87,9 @@ function Email() {
       _uuid = uuid
     })
     if (_uuid) {
-      console.log('*** _uuid', _uuid)
+      // console.log('*** _uuid', _uuid)
     } else {
-      console.log('*** item.id', item.id)
+      // console.log('*** item.id', item.id)
     }
     return item.id
   }

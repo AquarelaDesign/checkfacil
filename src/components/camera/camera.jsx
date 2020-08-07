@@ -1,7 +1,10 @@
 import React from "react"
 import { Camera } from "expo-camera"
 import { FontAwesome, FontAwesome5 } from '@expo/vector-icons'
+
 import * as MediaLibrary from 'expo-media-library'
+import * as ImageManipulator from "expo-image-manipulator"
+// import * as FileSystem from 'expo-file-system'
 
 import {
   Image, 
@@ -29,12 +32,15 @@ export default class Foto extends React.Component {
     asset: null
   }
 
+  abortController = new AbortController()
+
   async UNSAFE_componentWillMount() {
     const { status } = await Camera.requestPermissionsAsync()
     this.setState({ hasCameraPermission: status === "granted" })
   }
 
   UNSAFE_componentWillUnmount() {
+    this.abortController.abort()
     this.props.close()
   }
 
@@ -51,7 +57,9 @@ export default class Foto extends React.Component {
 
   snap = async () => {
     if (this.camera) {
-      let photo = await this.camera.takePictureAsync()
+      // console.log('**** Ratio', this.camera.getSupportedRatiosAsync())
+      // console.log('**** Size', this.camera.getAvailablePictureSizesAsync())
+      let photo = await this.camera.takePictureAsync({ quality: 0.2, skipProcessing: true })
       if (photo) {
         this.setState({ imageuri: photo.uri })
       }
@@ -61,7 +69,7 @@ export default class Foto extends React.Component {
   salvar = async () => {
     const file = {
       uri: this.state.imageuri,
-      filename: `${new Date().getTime()}.jpg`,
+      filename: `${new Date().getTime()}.png`,
       mediaType: MediaLibrary.MediaType.photo
     }
 
@@ -69,29 +77,55 @@ export default class Foto extends React.Component {
     const dataAtual = moment().format('YYYYMMDD')
     const album = await MediaLibrary.getAlbumAsync(`FDC${dataAtual}`)
 
-    console.log('album', album)
+    // console.log('album', album)
 
     if (album === null) {
+      // console.log('**** asset-1', asset)
+
       MediaLibrary.createAlbumAsync(`FDC${dataAtual}`, asset, false)
       .then((res) => {
-        console.log('Album criado!')
-        console.log('Album:', res)
+        // console.log('Album criado!')
+        // console.log('Album:', res)
         this.props.close()
       })
       .catch(error => {
         console.log('Erro ao Criar o Album', error)
       })
     } else {
+
+      /*
+      console.log('**** asset-2', asset)
+
+      const newImageUri = await this.ajustaImage(asset.uri)
+      const imageUri = `${FileSystem.documentDirectory}${album.title}/${file.filename}`
+
+      console.log('**** asset.uri', asset.uri)
+
+      FileSystem.copyAsync({
+        from: newImageUri,
+        to: imageUri,
+      })
+
+      asset['uri'] = imageUri
+      asset['filename'] = file.filename
+
+      console.log('**** newImage', asset)
+      console.log('**** album', album)
+      // console.log('**** documentDirectory', FileSystem.documentDirectory)
+      // console.log('**** cacheDirectory', FileSystem.cacheDirectory)
+      */
+
       MediaLibrary.addAssetsToAlbumAsync(asset, album, false)
       .then((res) => {
 
         ToastAndroid.showWithGravityAndOffset(
-          "Imagem Adicionada no Album! Atualize a lista para visualizar.",
+          "Imagem Salva!",
           ToastAndroid.LONG,
           ToastAndroid.TOP,
           25,
           50
         )
+        this.props.close()
         
         // console.log(`Foto Adicionada no Album FDC${dataAtual}!`)
         // console.log('Foto:', res)
@@ -108,6 +142,21 @@ export default class Foto extends React.Component {
       })
     }
     return null
+  }
+
+  ajustaImage = async (imageUri) => {
+    try {
+      const manipResult = await ImageManipulator.manipulateAsync(
+        imageUri,
+        [{resize: {width: 800}}],
+        { compress: 0.2, format: ImageManipulator.SaveFormat.PNG }
+      )
+      return manipResult.uri
+    }
+    catch (e) {
+      console.log('**** ajustaImage e', e)
+      return imageUri
+    }
   }
 
   render() {

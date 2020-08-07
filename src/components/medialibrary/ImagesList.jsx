@@ -48,15 +48,18 @@ function ImagesList({ route }) {
   
   const [state, dispatch] = useContext(Context)
 
-  // const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
+  const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 
   // console.log('*** Atualiza', atualiza,  route?.params?.atualiza ?  route.params.atualiza : false)
+
+  const abortController = new AbortController()
+  const signal = abortController.signal
 
   useEffect(() => {
     // setIsFetching(true)
     try {
       // await sleep(5000)
-      if (atualiza) {
+      if (route?.params?.atualiza ?  route.params.atualiza : false) {
         onRefresh()
       }
     }
@@ -71,7 +74,12 @@ function ImagesList({ route }) {
       setTipo('da Imagem')
       buscaMedias(album)
     }
-  }, [atualiza])
+
+    return function cleanup() {
+      abortController.abort()
+    }
+
+  }, [route, modalVisible])
 
   const buscaAlbuns = () => {
     (async () => {
@@ -150,6 +158,7 @@ function ImagesList({ route }) {
     } else {
       buscaMedias(album)
     }
+    setAtualiza(true)
   }
 
   const onDelete = async () => {
@@ -165,8 +174,8 @@ function ImagesList({ route }) {
       dispatch({type: 'REMOVE_ANEXO', payload: _item})
     }
 
+    await sleep(500)
     setContentItem(null)
-    setIsFetching(true)
     onRefresh()
   }
 
@@ -202,8 +211,10 @@ function ImagesList({ route }) {
   }
 
   const confModal = async (item) => {
-    setContentItem(item)
-    setModalVisible(true)
+    if (!modalVisible) {
+      setContentItem(item)
+      setModalVisible(true)
+    }
   }
 
   const ImagemModal = () => (
@@ -254,6 +265,7 @@ function ImagesList({ route }) {
                 // setConfirm(true)
                 onDelete()
                 setModalVisible(!modalVisible)
+                setAtualiza(true)
               }}
             >
               <Text style={styles.textStyle}>Sim</Text>

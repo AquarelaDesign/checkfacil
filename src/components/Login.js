@@ -458,6 +458,7 @@ export default function Login({ navigation }) {
   }
 
   const handleSubmit = async () => {
+    console.log('*** handleSubmit:', response)
     if (fbOK === true) {
       navigation.navigate('Home')
       return
@@ -488,6 +489,8 @@ export default function Login({ navigation }) {
           psenha: password,
           porigem: 'tfcpar',
         })).then(response => {
+          console.log('*** Autentica:', response)
+              
           if (response.status === 200) {
             if (response.data === '') {
               if (Platform.OS === 'android' || Platform.OS === 'ios') {
@@ -503,7 +506,7 @@ export default function Login({ navigation }) {
 
             if (response.data.ProDataSet !== undefined) {
               const { ttfcusu, ttretorno } = response.data.ProDataSet
-              
+
               if (ttretorno[0].tipret !== '') {
                 if (Platform.OS === 'android' || Platform.OS === 'ios') {
                   ToastAndroid.showWithGravity(

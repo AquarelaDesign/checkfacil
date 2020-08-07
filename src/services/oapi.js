@@ -33,10 +33,13 @@ oapi.interceptors.request.use(async config => {
       })
     })
   })
+  console.log('*** Request:', response)
+
   return config
 })
 
 oapi.interceptors.response.use((response) => {
+  console.log('*** Response:', response)
   return response
 },(error) => {
   if (error.response !== undefined) {
