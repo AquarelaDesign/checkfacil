@@ -458,7 +458,7 @@ export default function Login({ navigation }) {
   }
 
   const handleSubmit = async () => {
-    console.log('*** handleSubmit:', response)
+    // console.log('*** handleSubmit:', response)
     if (fbOK === true) {
       navigation.navigate('Home')
       return
