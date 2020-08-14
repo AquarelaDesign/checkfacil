@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react'
 
 import {
+  AsyncStorage, 
   Button,
   Dimensions,
   FlatList,
@@ -44,10 +45,21 @@ function Email() {
       setAanexos(state.anexos)
       // console.log('*** Anexos', aanexos)
     }
-  }, [state])
+
+    if (cc === '') {
+      AsyncStorage.getItem('@cc').then(CC => {
+        if (cc !== CC && cc !== '') {
+          setCc(CC)
+        }
+      })
+    }
+
+  }, [state, cc])
 
   async function sendEmailAsync() {
     
+    AsyncStorage.setItem('@cc', cc)
+
     const _recipients = email.split(';')
     const _ccRecipients = cc.split(';')
     const _bccRecipients = cco.split(';')
@@ -65,7 +77,7 @@ function Email() {
     if (result.status === 'sent') {
       dispatch({type: 'SET_ANEXO', payload: []})
       setEmail('')
-      setCc('')
+      // setCc('')
       setCco('')
       setAssunto('')
       setConteudo('')

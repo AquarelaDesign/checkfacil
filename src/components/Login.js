@@ -241,6 +241,7 @@ export default function Login({ navigation }) {
             AsyncStorage.setItem('oficina', JSON.stringify(ttfcusu[0]))
             AsyncStorage.setItem('token', token)
             AsyncStorage.setItem('Autorizado', '')
+            AsyncStorage.setItem('email', email)
             setCodseg(ttfcusu[0].codseg)
 
             setModView(false)
@@ -458,7 +459,6 @@ export default function Login({ navigation }) {
   }
 
   const handleSubmit = async () => {
-    // console.log('*** handleSubmit:', response)
     if (fbOK === true) {
       navigation.navigate('Home')
       return
@@ -489,8 +489,6 @@ export default function Login({ navigation }) {
           psenha: password,
           porigem: 'tfcpar',
         })).then(response => {
-          console.log('*** Autentica:', response)
-              
           if (response.status === 200) {
             if (response.data === '') {
               if (Platform.OS === 'android' || Platform.OS === 'ios') {
@@ -649,6 +647,7 @@ export default function Login({ navigation }) {
             AsyncStorage.setItem('oficina', JSON.stringify(ttfcusu[0]))
             AsyncStorage.setItem('token', token)
             AsyncStorage.setItem('Autorizado', '')
+            AsyncStorage.setItem('email', Email)
             
             setMvSenha(false)
             setModView(false)
