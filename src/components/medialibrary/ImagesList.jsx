@@ -115,6 +115,7 @@ function ImagesList({ route }) {
       }
       catch (error) {
         console.log('error:', error)
+        alert(`Erro: ${error}`)
       }
     })()
   }
@@ -165,6 +166,7 @@ function ImagesList({ route }) {
       }
       catch (error) {
         console.log('error:', error)
+        alert(`Erro: ${error}`)
       }
     })()
   }
@@ -315,7 +317,7 @@ function ImagesList({ route }) {
   } else if (hasPermission === false) {
     return (
       <View>
-        <Text>Sem acesso a miblioteca de midias</Text>
+        <Text>Sem acesso a biblioteca de midias</Text>
       </View>
     )
   } else {
