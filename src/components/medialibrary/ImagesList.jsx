@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react'
 import * as MediaLibrary from 'expo-media-library'
+import * as Device from 'expo-device'
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons'
 
 import { 
@@ -12,6 +13,7 @@ import {
   TouchableHighlight,
   Dimensions,
   Modal,
+  Platform,
   // CheckBox,
 } from 'react-native'
 
@@ -84,8 +86,19 @@ function ImagesList({ route }) {
   const buscaAlbuns = () => {
     (async () => {
       try {
-        const { status } = await MediaLibrary.requestPermissionsAsync()
+        const { status, granted, canAskAgain, android } = await MediaLibrary.requestPermissionsAsync()
+
+        console.log ('**** buscaAlbuns', status, granted, canAskAgain, android)
+
         setHasPermission(status === "granted")
+
+        await sleep(500)
+        const aVersion = Device.osVersion.split('.')
+        const version = parseInt(aVersion[0])
+        if ((Platform.OS === 'android' && version >= 10) && status !== "granted") {
+          setHasPermission(granted)
+        }
+
         setIsFetching(false)
 
         const _albuns = await MediaLibrary.getAlbumsAsync()
@@ -109,8 +122,19 @@ function ImagesList({ route }) {
   const buscaMedias = (Album) => {
     (async () => {
       try {
-        const { status } = await MediaLibrary.requestPermissionsAsync()
+        const { status, granted, canAskAgain, android } = await MediaLibrary.requestPermissionsAsync()
+
+        console.log ('**** buscaMedias', status, granted, canAskAgain, android)
+
         setHasPermission(status === "granted")
+
+        await sleep(500)
+        const aVersion = Device.osVersion.split('.')
+        const version = parseInt(aVersion[0])
+        if ((Platform.OS === 'android' && version >= 10) && status !== "granted") {
+          setHasPermission(granted)
+        }
+
         setIsFetching(false)
 
         const _album = await MediaLibrary.getAlbumAsync(Album)
