@@ -54,7 +54,8 @@ export default function Login({ navigation }) {
 
   useEffect(() => {
     if (email === '') {
-      AsyncStorage.getItem('email').then(Email => {
+      AsyncStorage.getItem('@email').then(Email => {
+        console.log('**** Email', Email, email)
         if (email !== Email && email !== '') {
           setEmail(Email)
         }
@@ -241,7 +242,7 @@ export default function Login({ navigation }) {
             AsyncStorage.setItem('oficina', JSON.stringify(ttfcusu[0]))
             AsyncStorage.setItem('token', token)
             AsyncStorage.setItem('Autorizado', '')
-            AsyncStorage.setItem('email', email)
+            AsyncStorage.setItem('@email', email)
             setCodseg(ttfcusu[0].codseg)
 
             setModView(false)
@@ -478,7 +479,7 @@ export default function Login({ navigation }) {
     }
 
     try {
-      await AsyncStorage.setItem('email', email)
+      await AsyncStorage.setItem('@email', email)
       if (email !== 'demo@demo.com') {
 
         await Api.post('', querystring.stringify({
@@ -557,7 +558,7 @@ export default function Login({ navigation }) {
           "senha": password
         })
         
-        await AsyncStorage.setItem('email', email)
+        await AsyncStorage.setItem('@email', email)
         registerForPushNotifications(email)
 
         if (response.status === 200) {
@@ -572,7 +573,7 @@ export default function Login({ navigation }) {
         }
         */
       } else {
-        await AsyncStorage.setItem('email', email)
+        await AsyncStorage.setItem('@email', email)
         await AsyncStorage.setItem('oficina', { e_mail: email })
         await AsyncStorage.setItem('token', '')
         await AsyncStorage.setItem('Autorizado', '')
@@ -647,7 +648,7 @@ export default function Login({ navigation }) {
             AsyncStorage.setItem('oficina', JSON.stringify(ttfcusu[0]))
             AsyncStorage.setItem('token', token)
             AsyncStorage.setItem('Autorizado', '')
-            AsyncStorage.setItem('email', Email)
+            AsyncStorage.setItem('@email', Email)
             
             setMvSenha(false)
             setModView(false)

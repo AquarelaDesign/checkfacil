@@ -1,14 +1,16 @@
 import React, { useState, useEffect, useContext } from 'react'
 import * as MediaLibrary from 'expo-media-library'
+// import * as Permissions from 'expo-permissions'
 import * as Device from 'expo-device'
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons'
 
-import { 
-  View, 
-  StyleSheet, 
-  Text, 
-  FlatList, 
-  Image, 
+import {
+  AsyncStorage,
+  View,
+  StyleSheet,
+  Text,
+  FlatList,
+  Image,
   TouchableOpacity,
   TouchableHighlight,
   Dimensions,
@@ -29,25 +31,26 @@ moment.locale('pt-BR')
 const { width, height } = Dimensions.get('window')
 
 const Colunas = 3
-const _width = ((width - 20)  / Colunas)
+const _width = ((width - 20) / Colunas)
 const _height = _width * 1.2
 
 function ImagesList({ route }) {
-  const [ hasPermission, setHasPermission ] = useState(null)
-  const [ isAlbum, setIsAlbum ] = useState(true)
-  const [ album, setAlbum ] = useState(null)
-  const [ albuns, setAlbuns ] = useState([])
-  const [ medias, setMedias ] = useState([])
-  const [ isFetching, setIsFetching ] = useState(false)
-  const [ atualiza, setAtualiza ] = useState(route?.params?.atualiza ?  route.params.atualiza : false)
-  
-  const [ imageVisible, setImageVisible ] = useState(false)
-  const [ contentImage, setContentImage ] = useState(null)
+  const [hasPermission, setHasPermission] = useState(null)
+  const [isAlbum, setIsAlbum] = useState(true)
+  const [album, setAlbum] = useState(null)
+  const [albuns, setAlbuns] = useState([])
+  const [medias, setMedias] = useState([])
+  const [isFetching, setIsFetching] = useState(false)
+  const [atualiza, setAtualiza] = useState(route?.params?.atualiza ? route.params.atualiza : false)
 
-  const [ modalVisible, setModalVisible ] = useState(false)
-  const [ tipo, setTipo ] = useState('')
-  const [ contentItem, setContentItem ] = useState(null)
-  
+  const [imageVisible, setImageVisible] = useState(false)
+  const [contentImage, setContentImage] = useState(null)
+
+  const [modalVisible, setModalVisible] = useState(false)
+  const [tipo, setTipo] = useState('')
+  const [contentItem, setContentItem] = useState(null)
+  const [email, setEmail] = useState('')
+
   const [state, dispatch] = useContext(Context)
 
   const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
@@ -61,14 +64,14 @@ function ImagesList({ route }) {
     // setIsFetching(true)
     try {
       // await sleep(5000)
-      if (route?.params?.atualiza ?  route.params.atualiza : false) {
+      if (route?.params?.atualiza ? route.params.atualiza : false) {
         onRefresh()
       }
     }
     catch (e) {
       console.log('*** Deu Erro!!')
     }
-  
+
     if (isAlbum) {
       setTipo('do Album')
       buscaAlbuns()
@@ -77,27 +80,50 @@ function ImagesList({ route }) {
       buscaMedias(album)
     }
 
+    if (email === '') {
+      AsyncStorage.getItem('@email')
+        .then(Email => {
+          console.log('**** AsyncStorage.Email', Email)
+          setEmail(Email)
+        })
+        .catch(error => {
+          console.log('**** AsyncStorage.error', error)
+        })
+
+    }
+
     return function cleanup() {
       abortController.abort()
     }
 
-  }, [route, modalVisible])
+  }, [route, modalVisible, email])
+
+  const getPermission = async () => {
+    const { status, granted } = await MediaLibrary.requestPermissionsAsync()
+    const Permiss = await MediaLibrary.requestPermissionsAsync()
+
+    // await sleep(5000)
+
+    if (email === 'aquarela.design@gmail.com') {
+      const Alerta = JSON.stringify(Permiss)
+      console.log('**** Status', status, granted, Permiss)
+      alert(`Status: ${Alerta} - ${email}`)
+    }
+    setHasPermission(status === "granted")
+
+    await sleep(500)
+    const aVersion = Device.osVersion.split('.')
+    const version = parseInt(aVersion[0])
+    if ((Platform.OS === 'android' && version >= 10) && status !== "granted") {
+      setHasPermission(granted)
+    }
+  }
 
   const buscaAlbuns = () => {
     (async () => {
       try {
-        const { status, granted, canAskAgain, android } = await MediaLibrary.requestPermissionsAsync()
 
-        console.log ('**** buscaAlbuns', status, granted, canAskAgain, android)
-
-        setHasPermission(status === "granted")
-
-        await sleep(500)
-        const aVersion = Device.osVersion.split('.')
-        const version = parseInt(aVersion[0])
-        if ((Platform.OS === 'android' && version >= 10) && status !== "granted") {
-          setHasPermission(granted)
-        }
+        getPermission()
 
         setIsFetching(false)
 
@@ -123,18 +149,7 @@ function ImagesList({ route }) {
   const buscaMedias = (Album) => {
     (async () => {
       try {
-        const { status, granted, canAskAgain, android } = await MediaLibrary.requestPermissionsAsync()
-
-        console.log ('**** buscaMedias', status, granted, canAskAgain, android)
-
-        setHasPermission(status === "granted")
-
-        await sleep(500)
-        const aVersion = Device.osVersion.split('.')
-        const version = parseInt(aVersion[0])
-        if ((Platform.OS === 'android' && version >= 10) && status !== "granted") {
-          setHasPermission(granted)
-        }
+        getPermission()
 
         setIsFetching(false)
 
@@ -147,14 +162,14 @@ function ImagesList({ route }) {
             album: _album,
             sortBy: MediaLibrary.SortBy.creationTime,
           })
-          
+
           let tmpMedia = []
           _medias.assets.map(item => {
-            let _item = {...item, checked: false}
+            let _item = { ...item, checked: false }
             if (state.anexos) {
               state.anexos.map(anexo => {
                 if (anexo.id === item.id) {
-                  _item = {...item, checked: anexo.checked}
+                  _item = { ...item, checked: anexo.checked }
                   return
                 }
               })
@@ -197,7 +212,7 @@ function ImagesList({ route }) {
       const image = await MediaLibrary.getAssetInfoAsync(contentItem)
       _assets.push(image)
       const _medias = await MediaLibrary.removeAssetsFromAlbumAsync(_assets, contentItem.albumId)
-      dispatch({type: 'REMOVE_ANEXO', payload: _item})
+      dispatch({ type: 'REMOVE_ANEXO', payload: _item })
     }
 
     await sleep(500)
@@ -207,8 +222,8 @@ function ImagesList({ route }) {
 
   const retData = (texto) => {
     if (texto.length >= 11) {
-      return `${texto.substr(9,2)}/${texto.substr(7,2)}/${texto.substr(3,4)}`
-    } 
+      return `${texto.substr(9, 2)}/${texto.substr(7, 2)}/${texto.substr(3, 4)}`
+    }
     return texto
   }
 
@@ -217,11 +232,11 @@ function ImagesList({ route }) {
     let _item = {}
     await medias.map(item => {
       if (item.id === itemID) {
-        _item = {...item, checked: !item.checked}
-        if (_item.checked){
-          dispatch({type: 'ADD_ANEXO', payload: _item})
+        _item = { ...item, checked: !item.checked }
+        if (_item.checked) {
+          dispatch({ type: 'ADD_ANEXO', payload: _item })
         } else {
-          dispatch({type: 'REMOVE_ANEXO', payload: _item})
+          dispatch({ type: 'REMOVE_ANEXO', payload: _item })
         }
       } else {
         _item = item
@@ -270,7 +285,7 @@ function ImagesList({ route }) {
       </View>
     </Modal>
   )
- 
+
   const ViewModal = () => (
     <Modal
       animationType="slide"
@@ -424,8 +439,8 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
   titulo: {
-    position: 'absolute', 
-    left: 10, 
+    position: 'absolute',
+    left: 10,
     marginTop: -30,
     fontSize: 18,
     fontStyle: 'italic',
@@ -499,7 +514,7 @@ const styles = StyleSheet.create({
     elevation: 5,
     height: height - 80,
   },
-  
+
   imageView: {
     // width: _width,
     // height: _height,

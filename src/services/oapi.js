@@ -19,7 +19,7 @@ publicIP().then(ip => {
 
 oapi.interceptors.request.use(async config => {
 
-  AsyncStorage.getItem('email').then(Email => {
+  AsyncStorage.getItem('@email').then(Email => {
     AsyncStorage.getItem('oficina').then(Oficina => {
       let codemp = ''
       let codfil = 0

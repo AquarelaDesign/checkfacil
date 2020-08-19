@@ -303,7 +303,7 @@ const NovoUsuario = ({ navigation, pemail }) => {
                   ToastAndroid.CENTER
                 )
 
-                AsyncStorage.setItem('email', values.e_mail)
+                AsyncStorage.setItem('@email', values.e_mail)
                 navigation.goBack()
                 setIsLoading(false)
               } else {
