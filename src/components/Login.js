@@ -198,7 +198,8 @@ export default function Login({ navigation }) {
   }
 
   const handleNovo = async () => {
-    navigation.navigate('NovoUsuario', {pemail: email})
+    // navigation.navigate('NovoUsuario', {pemail: email})
+    Alert.alert('Cadastre-se em', 'www.fichadocarro.com.br')
   }
 
   const handleRecuperar = async () => {
@@ -370,6 +371,19 @@ export default function Login({ navigation }) {
       if (Platform.OS === 'android' || Platform.OS === 'ios') {
         ToastAndroid.showWithGravity(
           'Código Inválido!!!',
+          ToastAndroid.LONG,
+          ToastAndroid.TOP
+        )
+      } else {
+        console.log('*** Toast:', Platform.OS, 'Código Inválido!!!')
+      }
+      return
+    }
+
+    if (novaSenha === '') {
+      if (Platform.OS === 'android' || Platform.OS === 'ios') {
+        ToastAndroid.showWithGravity(
+          'A Nova Senha deve ser informada!',
           ToastAndroid.LONG,
           ToastAndroid.TOP
         )
