@@ -100,15 +100,15 @@ function ImagesList({ route }) {
 
   const getPermission = async () => {
     const { status, granted } = await MediaLibrary.requestPermissionsAsync()
-    const Permiss = await MediaLibrary.requestPermissionsAsync()
+    // const Permiss = await MediaLibrary.requestPermissionsAsync()
 
     // await sleep(5000)
 
-    if (email === 'aquarela.design@gmail.com') {
-      const Alerta = JSON.stringify(Permiss)
-      console.log('**** Status', status, granted, Permiss)
-      alert(`Status: ${Alerta} - ${email}`)
-    }
+    // if (email === 'aquarela.design@gmail.com') {
+    //   const Alerta = JSON.stringify(Permiss)
+    //   console.log('**** Status', status, granted, Permiss)
+    //   alert(`Status: ${Alerta} - ${email}`)
+    // }
     setHasPermission(status === "granted")
 
     await sleep(500)
